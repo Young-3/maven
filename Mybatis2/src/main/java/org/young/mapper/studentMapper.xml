@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.young.mapper.StudentMapper">
+    <!--定位用namespace.id namespace是接口mapper的全类名-->
+    <resultMap id="stuResultMap" type="student">
+        <id property="stuId" column="stu_id"></id>
+        <result property="stuName" column="stu_name"></result>
+        <result property="stuPw" column="stu_pw"></result>
+        <result property="stuSex" column="stu_sex" javaType="boolean" jdbcType="INTEGER"></result>
+<!--        <result property="address.homeAddress" column="home_address" ></result>
+        <result property="address.schoolAddress" column="school_address" ></result>-->
+        <association property="address" javaType="Address">
+            <result property="homeAddress" column="home_address"></result>
+            <result property="schoolAddress" column="school_address"></result>
+        </association>
+    </resultMap>
+
+
+
+    <!--CourseMap-->
+    <resultMap id="courseRm" type="course">
+        <id     property="cId" column="c_id"></id>
+        <result property="cName" column="c_name"></result>
+    </resultMap>
+
+    <resultMap id="studentBusinessMap" type="studentbusiness">
+        <result property="stuId" column="stu_id"></result>
+        <result property="stuName" column="stu_name"></result>
+        <result property="stuPw" column="stu_pw"></result>
+        <result property="stuSex" column="stu_sex" javaType="boolean" jdbcType="INTEGER"></result>
+        <result property="address.homeAddress" column="home_address" ></result>
+        <result property="address.schoolAddress" column="school_address" ></result>
+      <!-- <result property="cId" column="c_id" ></result>
+        <result property="cName" column="c_name" ></result>-->
+        <!--一对一，对象成员使用association-->
+        <association property="course" javaType="Course">
+            <id property="cId" column="c_id"></id>
+            <result property="cName" column="c_name"></result>
+        </association>
+
+    </resultMap>
+
+    <resultMap id="stu-course-map" type="student">
+        <result property="stuId" column="stu_id"></result>
+        <result property="stuName" column="stu_name"></result>
+        <result property="stuPw" column="stu_pw"></result>
+        <result property="stuSex" column="stu_sex" javaType="boolean" jdbcType="INTEGER"></result>
+        <association property="address" javaType="Address">
+            <result property="homeAddress" column="home_address"></result>
+            <result property="schoolAddress" column="school_address"></result>
+        </association>
+        <association property="course" javaType="Course">
+            <id property="cId" column="c_id"></id>
+            <result property="cName" column="c_name"></result>
+        </association>
+    </resultMap>
+
+    <!--sql片段-->
+    <sql id="ObjectArrayStu">
+        <where>
+            <if test="array !=null and array.length ">
+
+                <foreach collection="array" open=" and stu_id in (" close=")" item="student" separator=",">
+                    #{student.stuId}
+                </foreach>
+            </if>
+
+
+        </where>
+    </sql>
+
+    <select id="queryStudentByStuId" resultMap="stuResultMap" parameterType="int">
+        select * from student where stu_id = #{stuId}
+    </select>
+
+    <!--查询 使用转换器-->
+    <select id="queryStudentByStuIdWithConverter" resultMap="stuResultMap" parameterType="int">
+        select *from student where stu_id = #{stuId}
+    </select>
+
+    <insert id="addStudent" parameterType="student">
+        insert into student(stu_id,stu_name,stu_pw,stu_sex) value(#{stuId},#{stuName},#{stuPw},#{stuSex,javaType=boolean,jdbcType=INTEGER})
+
+    </insert>
+
+    <update id="updateStudentByStuIdAndStuPw" parameterType="student">
+        update student set stu_name=#{stuName} where stu_id=#{stuId}
+    </update>
+
+    <delete id="deleteStudentByStuId" parameterType="int">
+        delete from student where stu_id = #{stuId}
+    </delete>
+
+    <select id="queryAllStudents" resultMap="stuResultMap">
+        select * from student
+    </select>
+    <!--根据学号和密码查询-->
+ <select id="queryStudentByIdAndPw" resultMap="stuResultMap" parameterType="student">
+        select * from student where stu_id=#{stuId} and stu_pw=#{stuPw}
+    </select>
+  <!--根据地址查询-->
+ <select id="queryStudentByAddress" resultMap="stuResultMap" parameterType="address">
+        select stu_id,stu_name,stu_sex,home_address,school_address from student where home_address=#{homeAddress} or school_address=#{schoolAddress}
+    </select>
+<!--根据学生地址查询-->
+ <select id="queryStudentByStuAddress" resultMap="stuResultMap" parameterType="student">
+        select stu_id,stu_name,stu_sex,home_address,school_address from student where home_address=#{address.homeAddress} or school_address=#{address.schoolAddress}
+    </select>
+
+    <!--根据hashMap学号和密码查询-->
+    <select id="queryStudentByIdAndPwWithMap" resultMap="stuResultMap" parameterType="HashMap">
+        select * from student where stu_id=#{stuId} and stu_pw=#{stuPw}
+    </select>
+
+    <!--通过调用存储过程进行查询,输入参数用map-->
+    <select id="queryCountByGnameWithProcedure" statementType="CALLABLE" parameterType="HashMap">
+        {
+           CALL queryStuByGname(
+              #{gName,jdbcType=VARCHAR,mode=IN},
+              #{scount,jdbcType=INTEGER,mode=OUT}
+           )
+        }
+    </select>
+
+
+    <!--别名作为map的key-->
+    <select id="queryAllStudentByMapKey" resultType="HashMap" >
+        select stu_id"id",stu_name"name" from student
+    </select>
+
+    <!--动态数据库，sql标签-->
+    <select id="queryStudentSqlTap" parameterType="student" resultMap="stuResultMap" >
+        select stu_id,stu_name,home_address from student
+        <where>
+            <if test="stuId !=null and stuId !='' ">
+                and stu_id = #{stuId}
+            </if>
+
+            <if test="stuName !=null and stuName !='' ">
+                and stu_id = #{stuName}
+            </if>
+
+            <!-- <if test="stuName !=null and stuName !='' ">
+                stu_id = #{stuName}
+            </if>-->
+
+        </where>
+
+
+    </select>
+
+<!--foreach 集合迭代多个对象，将多个元素对象属性中-->
+    <select id="queryStuWithNosInGrade" parameterType="grade" resultMap="stuResultMap">
+        select * from student
+        <where>
+            <if test="stuIds !=null and stuIds.size>0 ">
+
+               <foreach collection="stuIds" open=" and stu_id in (" close=")" item="stuId" separator=",">
+                 #{stuId}
+               </foreach>
+           </if>
+
+
+        </where>
+    </select>
+
+    <!--foreach 数组迭代多个对象-->
+    <!--数组固定array 简单类型-->
+    <select id="queryStuWithArray" parameterType="int[]" resultMap="stuResultMap">
+        select * from student
+        <where>
+            <if test="array !=null and array.length ">
+
+                <foreach collection="array" open=" and stu_id in (" close=")" item="stuId" separator=",">
+                    #{stuId}
+                </foreach>
+            </if>
+
+
+        </where>
+    </select>
+
+    <!--foreach list迭代多个对象-->
+    <!--list固定list-->
+    <select id="queryStuWithList" parameterType="list" resultMap="stuResultMap">
+        select * from student
+        <where>
+            <if test="list !=null and list.size>0 ">
+
+                <foreach collection="list" open=" and stu_id in (" close=")" item="stuId" separator=",">
+                    #{stuId}
+                </foreach>
+            </if>
+
+
+        </where>
+    </select>
+
+    <!--foreach 对象数组迭代多个对象-->
+    <!--将多个元素放入对象数组中，Student[] student = {student1,student2}-->
+    <!--不在同一文件，refid用全路径-->
+    <select id="queryStuWithObjectAray" parameterType="Object[]" resultMap="stuResultMap">
+        select * from student
+
+       <include refid="ObjectArrayStu"></include>
+    </select>
+
+    <!--多表one to one关联查询-->
+    <select id="queryStuByIdWithOne" parameterType="int" resultMap="studentBusinessMap">
+        select s.* ,c.* from student s inner join course c
+        on s.c_id = c.c_id
+        where s.stu_id = #{stu_id}
+    </select>
+    <!--多表关联查询-->
+    <select id="queryStuByIdWithOne1" parameterType="int" resultMap="stu-course-map">
+        select s.* ,c.* from student s inner join course c
+        on s.c_id = c.c_id
+        where s.stu_id = #{stId}
+    </select>
+
+    <!--一对多查询-->
+    <!--查询班级信息，和班级所有学生信息-->
+    <select id="queryStusAClaByClaId" resultMap="class-student-map" parameterType="int">
+        select s.* ,c.* from student s inner join class c
+        on s.class_id = c.class_id
+        where c.class_id = #{classId}
+    </select>
+
+    <resultMap id="class-student-map" type="studentclass">
+        <!--主类是班级，先配置班级信息-->
+        <id property="classId" column="class_id"></id>
+        <result property="className" column="class_name"></result>
+        <!--配置成员属性学生,一对多-->
+        <collection property="students" ofType="student">
+            <result property="stuId" column="stu_id"></result>
+            <result property="stuName" column="stu_name"></result>
+            <result property="stuPw" column="stu_pw"></result>
+            <result property="stuSex" column="stu_sex" javaType="boolean" jdbcType="INTEGER"></result>
+            <association property="address" javaType="Address">
+                <result property="homeAddress" column="home_address"></result>
+                <result property="schoolAddress" column="school_address"></result>
+            </association>
+            <association property="course" javaType="Course">
+                <id property="cId" column="c_id"></id>
+                <result property="cName" column="c_name"></result>
+            </association>
+
+        </collection>
+
+    </resultMap>
+</mapper>

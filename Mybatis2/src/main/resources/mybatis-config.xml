@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+
+
+
+
+<configuration>
+
+
+
+
+
+
+    <!--数据库动态代理-->
+    <properties resource="db.properties"></properties>
+
+    设置全局参数
+    <settings>
+        <!--开启日志-->
+        <setting name="logIml" value="LOG4J"/>
+    </settings>
+
+    <!--设置单个/多个别名-->
+    <typeAliases >
+        <!-- 单个别名-->
+        <!--<typeAlias type="org.young.entity.Student" alias="student"></typeAlias>-->
+        <!--批量定义别名，别名就是不带包名的类名-->
+        <package name="org.young.entity"></package>
+
+    </typeAliases>
+<!--转换器-->
+    <typeHandlers>
+        <typeHandler handler="org.young.converter.BooleanAndIntConverter" javaType="Boolean" jdbcType="INTEGER" ></typeHandler>
+    </typeHandlers>
+
+    <!--通过environment default和id 来选择mybatis运行时的数据库-->
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <!--jdbc需要commit事务-->
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <mapper resource="java/org/young/mapper/studentMapper.xml"/>
+    </mappers>
+</configuration>
