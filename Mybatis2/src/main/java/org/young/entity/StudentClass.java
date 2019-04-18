@@ -1,12 +1,13 @@
 package org.young.entity;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @author Young
  * @version1.0
  */
-public class StudentClass {
+public class StudentClass implements Serializable {
 	private int classId;
 	private  String className;
 	private List<Student> students;

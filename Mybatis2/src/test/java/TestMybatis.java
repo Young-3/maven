@@ -1,8 +1,9 @@
-import org.young.entity.*;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.young.entity.*;
+import org.young.mapper.StudentClassMapper;
 import org.young.mapper.StudentMapper;
 
 import java.io.IOException;
@@ -369,6 +370,54 @@ public class TestMybatis {
 		sqlSession.close();
 	}
 
+	//根据查询全部学生,并延迟加载课程
+	public static void queryStuByIdWithOneLoad() throws IOException {
+		//加载mybatis配置文件
+		Reader reader = Resources.getResourceAsReader("mybatis-config.xml");
+
+		SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);//可以手工指定数据库环境
+		SqlSession sqlSession = sqlSessionFactory.openSession();
+		StudentMapper studentMapper = sqlSession.getMapper(StudentMapper.class);
+
+		//全部学生
+		List<Student> students = studentMapper.queryStuByIdWithOneLoad();
+		for (Student student : students) {
+			System.out.println(student);
+			//获取课程表
+			Course course = student.getCourse();
+			System.out.println(course.getcId());
+		}
+		sqlSession.close();
+	}
+
+	//根据班级查学生和班级--延迟加载
+	public static void queryStusAClaByClaIdLazyLoad() throws IOException {
+		//加载mybatis配置文件
+		Reader reader = Resources.getResourceAsReader("mybatis-config.xml");
+
+		SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);//可以手工指定数据库环境
+		SqlSession sqlSession = sqlSessionFactory.openSession();
+		StudentClassMapper studentClassMapper = sqlSession.getMapper(StudentClassMapper.class);
+
+		List<StudentClass> studentClasses = studentClassMapper.queryStusAClaByClaIdLazyLoad();
+		//班级对应学生
+		for (StudentClass stuClass : studentClasses) {
+			System.out.println(stuClass.getClassId() + "-" + stuClass.getClassName());
+			System.out.println("------------");
+			/*for (Student student: stuClass.getStudents()) {
+				System.out.println(student.getStuId()+"-"+student.getStuName());
+
+			}*/
+
+			for (Student student : stuClass.getStudents()) {
+				System.out.println(student.getStuId());
+
+			}
+		}
+		sqlSession.close();
+	}
+
+
 
 
 	public static void main(String[] args) throws IOException {
@@ -390,7 +439,9 @@ public class TestMybatis {
 //		queryStuWithList();
 //		queryStuWithObjectAray();
 //		queryStuByIdWithOne1();
-		queryStusAClaByClaId();
+//		queryStusAClaByClaId();
+//		queryStuByIdWithOneLoad();
+		queryStusAClaByClaIdLazyLoad();
 		long endTime = System.currentTimeMillis();    //获取结束时间
 		System.out.println("程序运行时间：" + (endTime - startTime) + "ms");    //输出程序运行时间
 	}

@@ -4,13 +4,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.young.entity.studentMapper">
     <!--定位用namespace.id-->
-    <resultMap id="stuResultMap" type="org.young.entity.Student">
+    <resultMap id="student-map" type="org.young.entity.Student">
         <result property="stuId" column="stu_id"></result>
         <result property="stuName" column="stu_name"></result>
         <result property="stuPw" column="stu_Pw"></result>
     </resultMap>
 
-    <select id="queryByStuId" resultMap="stuResultMap" parameterType="int">
+    <select id="queryByStuId" resultMap="student-map" parameterType="int">
         select * from student where stu_id = #{id}
     </select>
 
@@ -27,7 +27,7 @@
         delete from student where stu_id = #{stuId}
     </delete>
 
-    <select id="queryAllStudents" resultMap="stuResultMap">
+    <select id="queryAllStudents" resultMap="student-map">
         select * from student
     </select>
 

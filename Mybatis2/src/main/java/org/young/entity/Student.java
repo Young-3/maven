@@ -1,10 +1,12 @@
 package org.young.entity;
 
+import java.io.Serializable;
+
 /**
  * @author Young
  * @version1.0
  */
-public class Student {
+public class Student implements Serializable {
 
 	private int stuId;
 	private String stuName;

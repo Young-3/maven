@@ -40,4 +40,6 @@ public interface StudentMapper {
 	Student queryStuByIdWithOne1(int stuId);
 	StudentClass queryStusAClaByClaId(int classId);
 
+	List<Student> queryStuByIdWithOneLoad();
+
 }

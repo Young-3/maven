@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.young.mapper.courseMapper">
+    <!--查询学生对应course-->
+    <select id="queryCourseById" resultMap="org.young.mapper.StudentMapper.courseRm" parameterType="int">
+        select * from course where c_id = #{cId}
+    </select>
+</mapper>

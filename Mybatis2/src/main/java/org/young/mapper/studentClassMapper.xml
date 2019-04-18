@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.young.mapper.StudentClassMapper">
+    <!--一对多查询延迟加载-->
+    <!--查询班级信息，和班级所有学生信息-->
+    <select id="queryStusAClaByClaIdLazyLoad" resultMap="class-student-lazyload-map" parameterType="int">
+        <!--先查班级-->
+        select c.* from class c
+    </select>
+
+    <!--一对多延迟加载-->
+    <resultMap id="class-student-lazyload-map" type="studentClass">
+        <!--主类是班级，先配置班级信息-->
+        <id property="classId" column="class_id"></id>
+        <result property="className" column="class_name"></result>
+        <!--配置成员属性学生,一对多-->
+        <collection property="students" ofType="student" select="org.young.mapper.StudentMapper.queryStuByClassId"
+                    column="class_id">
+            <!-- <result property="stuId" column="stu_id"></result>
+             <result property="stuName" column="stu_name"></result>
+             <result property="stuPw" column="stu_pw"></result>
+             <result property="stuSex" column="stu_sex" javaType="boolean" jdbcType="INTEGER"></result>
+             <association property="address" javaType="Address">
+                 <result property="homeAddress" column="home_address"></result>
+                 <result property="schoolAddress" column="school_address"></result>
+             </association>
+             <association property="course" javaType="Course">
+                 <id property="cId" column="c_id"></id>
+                 <result property="cName" column="c_name"></result>
+             </association>-->
+
+        </collection>
+
+    </resultMap>
+</mapper>

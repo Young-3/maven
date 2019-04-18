@@ -21,6 +21,14 @@
     <settings>
         <!--开启日志-->
         <setting name="logImpl" value="LOG4J"/>
+
+        <!--开启延迟加载-->
+        <setting name="lazyLoadingEnabled" value="true"></setting>
+        <!--关闭立即加载-->
+        <setting name="aggressiveLazyLoading" value="false"></setting>
+
+        <!--开启二级缓存-->
+        <setting name="cacheEnabled" value="true"></setting>
     </settings>
 
     <!--设置单个/多个别名-->
@@ -51,5 +59,7 @@
     </environments>
     <mappers>
         <mapper resource="java/org/young/mapper/studentMapper.xml"/>
+        <mapper resource="java/org/young/mapper/courseMapper.xml"></mapper>
+        <mapper resource="java/org/young/mapper/studentClassMapper.xml"></mapper>
     </mappers>
 </configuration>
