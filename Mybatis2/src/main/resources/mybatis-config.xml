@@ -17,10 +17,10 @@
     <!--数据库动态代理-->
     <properties resource="db.properties"></properties>
 
-    设置全局参数
+    <!--设置全局参数-->
     <settings>
         <!--开启日志-->
-        <setting name="logIml" value="LOG4J"/>
+        <setting name="logImpl" value="LOG4J"/>
     </settings>
 
     <!--设置单个/多个别名-->
